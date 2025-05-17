@@ -1,19 +1,57 @@
-*.iml
-.gradle
-/local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
-.DS_Store
-/build
-/captures
-.externalNativeBuild
-.cxx
+# Gradle files
+.gradle/
+build/
+
+# Local configuration file (sdk path, etc)
 local.properties
 
-# Project exclude paths
-/app/
-/gradle/
+# Android Studio specific files
+/.idea/
+/.idea/*
+!.idea/inspectionProfiles
+*.iml
+
+# User-specific files
+*.swp
+*.swo
+*.log
+
+# Gradle wrapper jar file
+gradle-wrapper.jar
+
+# Build outputs
+**/build/
+
+# Captures (screenshots, videos)
+captures/
+
+# External native build folder (NDK builds)
+.externalNativeBuild/
+
+# CMake build folder
+.cxx/
+
+# Mac OS system files
+.DS_Store
+
+# IntelliJ project files
+*.ipr
+*.iws
+
+# Kotlin specific
+*.kotlin_module
+
+# Firebase debug and release files (if any)
+google-services.json
+google-services-debug.json
+google-services-release.json
+
+# Avoid committing secrets (if any)
+*.keystore
+
+# JetBrains IDE folders (like Rider, WebStorm, etc)
+.idea/
+
+# Misc
+*.orig
+
