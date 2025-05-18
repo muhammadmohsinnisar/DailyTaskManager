@@ -40,6 +40,7 @@ android {
     }
 
 }
+apply(plugin = "com.google.gms.google-services")
 
 dependencies {
 
@@ -77,4 +78,10 @@ dependencies {
     implementation(libs.kotlinx.coroutines.android)
 
     implementation(libs.coil.compose)
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.analytics)
+    implementation(libs.firebase.auth)
+    implementation(libs.play.services.auth)
+    implementation(libs.firebase.firestore.ktx)
+
 }
