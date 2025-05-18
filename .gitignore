@@ -16,9 +16,6 @@ local.properties
 *.swo
 *.log
 
-# Gradle wrapper jar file
-gradle-wrapper.jar
-
 # Build outputs
 **/build/
 
