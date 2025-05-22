@@ -48,10 +48,14 @@ class TaskViewModel(private val repository: TaskRepository) : ViewModel() {
     }
 
     fun toggleTaskDone(task: Task) {
-        val updatedTask = task.copy(isDone = !task.isDone)
+        val updatedTask = task.copy(done = !task.done)  
         viewModelScope.launch {
             try {
                 repository.updateTask(updatedTask)
+                val index = _tasks.indexOfFirst { it.id == task.id }
+                if (index != -1) {
+                    _tasks[index] = updatedTask
+                }
             } catch (e: Exception) {
                 Log.e("TaskViewModel", "Failed to update task", e)
             }

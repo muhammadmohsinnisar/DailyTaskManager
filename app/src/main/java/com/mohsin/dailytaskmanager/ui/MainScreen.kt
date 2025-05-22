@@ -1,5 +1,8 @@
 package com.mohsin.dailytaskmanager.ui
 
+import android.annotation.SuppressLint
+import android.app.Activity
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -23,9 +26,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.mohsin.dailytaskmanager.models.TaskViewModel
 
+@SuppressLint("ContextCastToActivity")
 @Composable
 fun MainScreen(
     viewModel: TaskViewModel,
@@ -35,6 +40,11 @@ fun MainScreen(
 
     var title by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
+    val activity = (LocalContext.current as? Activity)
+
+    BackHandler {
+        activity?.moveTaskToBack(true)
+    }
 
     Column(modifier = Modifier.padding(16.dp)) {
         Row(
