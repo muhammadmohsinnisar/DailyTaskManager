@@ -11,12 +11,16 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -36,12 +40,15 @@ fun LoginScreen(
     val context = LocalContext.current
     val activity = context as? Activity
 
+    var errorMessage by remember { mutableStateOf<String?>(null) }
+    var isLoading by remember { mutableStateOf(false) }
+
     // Configure Google Sign-In
     val googleSignInClient = remember {
         GoogleSignIn.getClient(
             context,
             GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(context.getString(R.string.default_web_client_id)) // Make sure you have this in strings.xml
+                .requestIdToken(context.getString(R.string.default_web_client_id)) // defined in strings.xml
                 .requestEmail()
                 .build()
         )
@@ -49,17 +56,17 @@ fun LoginScreen(
 
     // Firebase auth with Google account
     fun firebaseAuthWithGoogle(account: GoogleSignInAccount) {
+        isLoading = true
         val credential = GoogleAuthProvider.getCredential(account.idToken, null)
         auth.signInWithCredential(credential).addOnCompleteListener { task ->
+            isLoading = false
             if (task.isSuccessful) {
-                // Login success, navigate to main
                 onLoginSuccess()
             } else {
-                // Handle login failure, e.g. show message
+                errorMessage = task.exception?.localizedMessage ?: "Firebase authentication failed"
             }
         }
     }
-
 
     // Launcher for Google Sign-In intent
     val launcher = rememberLauncherForActivityResult(
@@ -70,7 +77,8 @@ fun LoginScreen(
             val account = task.getResult(Exception::class.java)
             account?.let { firebaseAuthWithGoogle(it) }
         } catch (e: Exception) {
-            e.printStackTrace() // Handle error here, maybe show Snackbar or Toast
+            e.printStackTrace()
+            errorMessage = e.localizedMessage ?: "Google Sign-In failed"
         }
     }
 
@@ -79,17 +87,26 @@ fun LoginScreen(
         color = MaterialTheme.colorScheme.background
     ) {
         Column(
-            modifier = Modifier.fillMaxWidth().padding(16.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            Text(text = "Welcome, please log in", style = MaterialTheme.typography.headlineMedium)
+            Text(
+                text = "Welcome, please log in",
+                style = MaterialTheme.typography.headlineMedium
+            )
 
             Spacer(modifier = Modifier.height(32.dp))
 
             Button(
                 onClick = {
-                    launcher.launch(googleSignInClient.signInIntent)
+                    activity?.let {
+                        launcher.launch(googleSignInClient.signInIntent)
+                    } ?: run {
+                        errorMessage = "Context is not an Activity"
+                    }
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {
@@ -104,7 +121,20 @@ fun LoginScreen(
             ) {
                 Text("Don't have an account? Sign up")
             }
+
+            errorMessage?.let {
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = it,
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
+
+            if (isLoading) {
+                Spacer(modifier = Modifier.height(24.dp))
+                CircularProgressIndicator()
+            }
         }
     }
 }
-

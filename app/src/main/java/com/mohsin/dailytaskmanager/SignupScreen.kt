@@ -20,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -33,8 +34,8 @@ fun SignupScreen(
     onLoginClick: () -> Unit,
     onSignupSuccess: () -> Unit
 ) {
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+    var email by rememberSaveable { mutableStateOf("") }
+    var password by rememberSaveable { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
 
@@ -83,18 +84,24 @@ fun SignupScreen(
 
         Button(
             onClick = {
-                if (email.isNotBlank() && password.isNotBlank()) {
-                    auth.createUserWithEmailAndPassword(email, password)
-                        .addOnCompleteListener { task ->
-                            if (task.isSuccessful) {
-                                onSignupSuccess()
-                            } else {
-                                errorMessage = task.exception?.localizedMessage ?: "Signup failed"
-                            }
-                        }
-                } else {
-                    errorMessage = "Please enter email and password"
+                val isEmailValid = android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
+                if (!isEmailValid) {
+                    errorMessage = "Invalid email format"
+                    return@Button
                 }
+                if (password.length < 6) {
+                    errorMessage = "Password must be at least 6 characters"
+                    return@Button
+                }
+
+                auth.createUserWithEmailAndPassword(email, password)
+                    .addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            onSignupSuccess()
+                        } else {
+                            errorMessage = task.exception?.localizedMessage ?: "Signup failed"
+                        }
+                    }
             },
             modifier = Modifier.fillMaxWidth()
         ) {

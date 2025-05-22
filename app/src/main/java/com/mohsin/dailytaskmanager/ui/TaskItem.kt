@@ -1,6 +1,5 @@
 package com.mohsin.dailytaskmanager.ui
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -29,16 +28,18 @@ fun TaskItem(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp)
-            .clickable { onToggleDone() }
     ) {
-        Row(modifier = Modifier.padding(16.dp), horizontalArrangement = Arrangement.SpaceBetween) {
+        Row(
+            modifier = Modifier.padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(task.title, style = MaterialTheme.typography.headlineMedium)
                 Text(task.description)
             }
             Column {
                 Checkbox(
-                    checked = task.isDone,
+                    checked = task.done,
                     onCheckedChange = { onToggleDone() }
                 )
                 IconButton(onClick = onDelete) {

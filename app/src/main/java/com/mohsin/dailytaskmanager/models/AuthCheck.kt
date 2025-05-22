@@ -15,7 +15,7 @@ fun AuthCheck(navController: NavHostController) {
             }
         } else {
             navController.navigate("login") {
-                popUpTo("home") { inclusive = true }
+                popUpTo("auth_check") { inclusive = true }
             }
         }
     }
