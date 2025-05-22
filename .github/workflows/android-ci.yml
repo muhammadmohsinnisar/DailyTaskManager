@@ -10,7 +10,6 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
@@ -33,8 +32,17 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle
 
-      - name: Create google-services.json file
-        run: echo "${{ secrets.GOOGLE_SERVICES_JSON }}" > app/google-services.json
+      - name: Create google-services.json
+        run: |
+          mkdir -p app
+          echo '${{ secrets.GOOGLE_SERVICES_JSON }}' > app/google-services.json
+          # Verify the file was created correctly
+          cat app/google-services.json
+
+      - name: Validate google-services.json
+        run: |
+          sudo apt-get install -y jq
+          jq empty app/google-services.json || (echo "Invalid JSON in google-services.json"; exit 1)
 
       - name: Build with Gradle
         run: ./gradlew assembleDebug --no-daemon
